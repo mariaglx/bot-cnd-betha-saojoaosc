@@ -1,24 +1,37 @@
-# Bot de Emissão de CND - Betha Sistemas (São João do Oeste/SC) 🚜
+# 🚜 Bot de Auditoria e Emissão de CND - Betha Sistemas
 
-Este projeto é uma automação desenvolvida em **Python** utilizando **Selenium** e **PyAutoGUI** para emitir Certidões Negativas de Débitos (CND) de forma automatizada através do Portal do Cidadão.
+Esta é uma solução robusta de automação desenvolvida em **Python** para otimizar o processo de extração, emissão e análise de Certidões Negativas de Débitos (CND) no Portal do Cidadão da Betha Sistemas.
 
-## 🚀 Funcionalidades
+## 🌟 Principais Funcionalidades
 
-* **Extração de Dados**: Lê uma lista de produtores/CPFs diretamente de um arquivo PDF (Sicas).
-* **Navegação Automatizada**: Realiza o login e navegação no sistema Betha até a área de emissão.
-* **Bypass de Modal**: Utiliza comandos de hardware (PyAutoGUI) para interagir com o visualizador de PDF e salvar o arquivo.
-* **Organização de Arquivos**: Renomeia automaticamente os PDFs baixados com o nome do produtor e CPF para facilitar a conferência.
+* **Segurança e Ética**: Implementação de variáveis de ambiente (`.env`) para proteger URLs governamentais e caminhos de diretórios locais, mantendo o código genérico e seguro para portfólio.
+* **Análise Heurística de PDF**: Integração com a biblioteca `PyPDF2` para leitura automatizada do conteúdo das certidões, permitindo a classificação imediata entre **NEGATIVA** ou **POSITIVA**.
+* **Extração com Regex**: Utilização de Expressões Regulares para isolar o nome dos produtores, removendo automaticamente endereços rurais e dados irrelevantes para a nomenclatura dos arquivos.
+* **Bypass de Interface**: Uso estratégico de `PyAutoGUI` para interagir com modais do sistema operacional e garantir o salvamento correto dos documentos.
+* **Gestão de Downloads**: Lógica de monitoramento de diretório com tratamento de exceções para evitar conflitos de escrita e leitura de arquivos pelo Windows.
 
 ## 🛠️ Tecnologias Utilizadas
 
-* [Python](https://www.python.org/) - Linguagem principal.
-* [Selenium](https://www.selenium.dev/) - Automação de navegador.
-* [PyAutoGUI](https://pyautogui.readthedocs.io/) - Interação com interface gráfica e teclado.
-* [WebDriver Manager](https://pypi.org/project/webdriver-manager/) - Gerenciamento automático do driver do Chrome.
+* **Python 3.14.3**
+* **Selenium**: Automação de navegação web.
+* **PyAutoGUI**: Automação de interface gráfica (teclado/mouse).
+* **PyPDF2 & pdfplumber**: Processamento e extração de dados de arquivos PDF.
+* **Python-Dotenv**: Gestão de configurações e variáveis de ambiente.
 
-## 📋 Pré-requisitos
+## ⚙️ Configuração
 
-Antes de rodar o bot, você precisará instalar as dependências:
+1. Instale as dependências necessárias:
+   ```bash
+   pip install selenium pyautogui webdriver-manager PyPDF2 python-dotenv pdfplumber
+2. Configure seu arquivo .env na raiz do projeto:
+   ```bash
+   ARQUIVO_FONTE=relatorio_sicas.pdf
+   SITE_PREFEITURA=[https://link-da-prefeitura.gov.br](https://link-da-prefeitura.gov.br)
+   DOWNLOAD_CERTIDAO=D:\Caminho\Para\Sua\Pasta
+   URL_BETHA_SISTEMA=[https://link-do-sistema.faces](https://link-do-sistema.faces)
 
-```bash
-pip install selenium pyautogui webdriver-manager PyPDF2
+## 📋 Como usar
+1. Coloque o PDF gerado pelo Sistema na pasta do projeto.
+2. Execute o script principal: ````python bot_cnd.py.````
+3. O bot irá processar a lista, baixar as certidões e renomeá-las automaticamente seguindo o padrão:
+````CND_STATUS_NOME_DO_PRODUTOR.pdf````
