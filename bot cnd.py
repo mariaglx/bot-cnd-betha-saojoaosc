@@ -23,7 +23,7 @@ URL_RESETA_SISTEMA = os.getenv("URL_BETHA_SISTEMA")
 
 # --- PARTE 1: EXTRAÇÃO ---
 def extrair_dados_sicas(caminho_pdf):
-    print(f"🔍 Lendo Relatório: {ARQUIVO_PDF_FONTE}...")
+    print(f"📋 Lendo Relatório: {ARQUIVO_PDF_FONTE}...")
     dados = []
     padrao_cpf = r'(\d{3}\.?\d{3}\.?\d{3}-?\d{2})'
     
@@ -37,16 +37,23 @@ def extrair_dados_sicas(caminho_pdf):
                     if cpf_enc:
                         cpf_limpo = cpf_enc.group(1).replace('.','').replace('-','')
                         nome_bruto = linha.split(cpf_enc.group(1))[0].strip()
-                        nome_limpo = re.sub(r'[^a-zA-Z ]', '', nome_bruto).strip()
-                        dados.append({'cpf': cpf_limpo, 'nome': nome_limpo or "Produtor"})
+                        
+                        # --- NOVA LÓGICA DE LIMPEZA CENTRALIZADA ---
+                        # 1. Remove caracteres especiais
+                        nome_filtrado = re.sub(r'[^a-zA-Z ]', '', nome_bruto).strip()
+                        # 2. Corta o endereço (LINHA, ESTRADA, etc) se existir
+                        # Se quiser ser bem genérica, pode usar o regex que conversamos antes
+                        nome_limpo = nome_filtrado.split(" LINHA ")[0].strip()
+                        
+                        dados.append({'cpf': cpf_limpo, 'nome': nome_limpo or "Contribuinte"})
     
     vistos = set()
     lista_final = [d for d in dados if not (d['cpf'] in vistos or vistos.add(d['cpf']))]
-    print(f"✅ {len(lista_final)} produtores encontrados.")
+    print(f"🔍 {len(lista_final)} contribuintes encontrados.")
     return lista_final
 
 # --- PARTE 2: ROBÔ ---
-def executar_robo_cnd(lista_produtores, pasta_download):
+def executar_robo_cnd(lista_contribuintes, pasta_download):
     caminho_abs = os.path.abspath(pasta_download)
     chrome_options = webdriver.ChromeOptions()
     
@@ -73,15 +80,15 @@ def executar_robo_cnd(lista_produtores, pasta_download):
         cnd = wait.until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Certidão Negativa")))
         driver.execute_script("arguments[0].click();", cnd)
 
-        total_produtores = len(lista_produtores)
-        for index, p in enumerate(lista_produtores):
+        total_contribuintes = len(lista_contribuintes)
+        for index, c in enumerate(lista_contribuintes):
             sucesso_cpf = False
             tentativas = 0
             numero_atual = index + 1
             
             while not sucesso_cpf and tentativas < 3:
                 try:
-                    print(f"🚜 [{numero_atual}/{total_produtores}] Processando: {p['nome']}")
+                    print(f"👤 [{numero_atual}/{total_contribuintes}] Contribuinte: {c['nome']}")
                     
                     # 1. Seleção de CPF
                     card_xpath = "//*[contains(text(), 'CPF')]"
@@ -94,7 +101,7 @@ def executar_robo_cnd(lista_produtores, pasta_download):
                     campo_cpf.click()
                     pyautogui.hotkey('ctrl', 'a')
                     pyautogui.press('backspace')
-                    pyautogui.write(p["cpf"], interval=0.1)
+                    pyautogui.write(c["cpf"], interval=0.1)
                     pyautogui.press('enter')
                     time.sleep(4) 
 
@@ -132,30 +139,17 @@ def executar_robo_cnd(lista_produtores, pasta_download):
                                         
                                         if "Sem débitos pendentes" in texto_extraido:
                                             status_final = "NEGATIVA"
-                                            print(f"🟢 {p['nome']}: NEGATIVA.")
+                                            print(f"🟢 {c['nome']}: NEGATIVA.")
                                         elif "Com débitos pendentes" in texto_extraido:
                                             status_final = "POSITIVA"
-                                            print(f"🔴 {p['nome']}: POSITIVA.")
+                                            print(f"🔴 {c['nome']}: POSITIVA.")
                                 except: pass
 
                                 # --- RENOMEAÇÃO LIMPA E ORGANIZADA ---
-                                # 1. Pega o nome do produtor
-                                nome_bruto = p['nome']
-                                
-                                # 2. Tenta cortar o endereço (ex: corta em 'LINHA' se existir)
-                                # Se o nome for "PEDRO MEIER LINHA SO JOO", ele pega só "PEDRO MEIER"
-                                if " LINHA " in nome_bruto:
-                                    nome_so_pessoa = nome_bruto.split(" LINHA ")[0]
-                                else:
-                                    nome_so_pessoa = nome_bruto
-                                
-                                # 3. Formata para o arquivo (substitui espaços por _)
-                                nome_final_arq = nome_so_pessoa.strip().replace(" ", "_")
-                                
-                                # 4. Define o nome final sem o CPF
+                                nome_final_arq = c['nome'].replace(" ", "_")
                                 novo_nome = f"CND_{status_final}_{nome_final_arq}.pdf"
+
                                 caminho_novo = os.path.join(caminho_abs, novo_nome)
-                                
                                 # Tenta mover (remove duplicata se existir para não travar)
                                 if os.path.exists(caminho_novo):
                                     os.remove(caminho_novo)
@@ -194,6 +188,6 @@ if __name__ == "__main__":
     
     caminho_pdf = os.path.join(diretorio_atual, ARQUIVO_PDF_FONTE)
     
-    produtores = extrair_dados_sicas(caminho_pdf)
-    if produtores:
-        executar_robo_cnd(produtores, pasta_final)
+    contribuintes = extrair_dados_sicas(caminho_pdf)
+    if contribuintes:
+        executar_robo_cnd(contribuintes, pasta_final)
