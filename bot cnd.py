@@ -114,13 +114,13 @@ def executar_robo_cnd(lista_produtores, pasta_download):
                     time.sleep(2)
                     pyautogui.press('enter')
                     
-                    # 5. Monitoramento e Análise de Conteúdo (Negativa vs Positiva)
+                    # 5. Monitoramento e Análise de Conteúdo
                     arquivo_encontrado = False
                     for _ in range(30):
                         arquivos = os.listdir(caminho_abs)
                         for arq in arquivos:
                             if arq.lower().endswith(".pdf") and not arq.startswith("CND_"):
-                                time.sleep(2)
+                                time.sleep(3) # Respiro vital para o Windows liberar o arquivo
                                 caminho_antigo = os.path.join(caminho_abs, arq)
                                 
                                 # --- ANÁLISE DO PDF ---
@@ -138,8 +138,16 @@ def executar_robo_cnd(lista_produtores, pasta_download):
                                             print(f"🔴 {p['nome']}: POSITIVA.")
                                 except: pass
 
-                                novo_nome = f"CND_{status_final}_{p['nome'].replace(' ', '_')}_{p['cpf']}.pdf"
-                                os.rename(caminho_antigo, os.path.join(caminho_abs, novo_nome))
+                                nome_seguro = p['nome'].replace(' ', '_')
+                                novo_nome = f"CND_{status_final}_{nome_seguro}_{p['cpf']}.pdf"
+                                caminho_novo = os.path.join(caminho_abs, novo_nome)
+                                
+                                # Tenta mover (remove duplicata se existir para não travar)
+                                if os.path.exists(caminho_novo):
+                                    os.remove(caminho_novo)
+                                
+                                os.rename(caminho_antigo, caminho_novo)
+                                print(f"💾 SALVO COM SUCESSO: {novo_nome}")
                                 arquivo_encontrado = True
                                 sucesso_cpf = True
                                 break
@@ -151,6 +159,7 @@ def executar_robo_cnd(lista_produtores, pasta_download):
 
                 except Exception as e:
                     tentativas += 1
+                    print(f"🔄 Erro na tentativa {tentativas}: {str(e)[:50]}")
                     driver.get(URL_RESETA_SISTEMA)
                     time.sleep(3)
 
@@ -165,7 +174,7 @@ def executar_robo_cnd(lista_produtores, pasta_download):
 if __name__ == "__main__":
     diretorio_atual = os.path.dirname(os.path.abspath(__file__))
     
-    # Usa a pasta do .env ou cria uma padrão no desktop do script
+    # Usa a pasta do .env ou cria uma padrão
     pasta_final = PASTA_DESTINO or os.path.join(diretorio_atual, "certidoes_baixadas")
     if not os.path.exists(pasta_final): os.makedirs(pasta_final)
     
