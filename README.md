@@ -1,4 +1,4 @@
-# 🚜 Bot de Auditoria e Emissão de CND - Betha Sistemas
+# 🤖 Bot de Auditoria e Emissão de CND - Betha Sistemas
 
 Esta é uma solução robusta de automação desenvolvida em **Python** para otimizar o processo de extração, emissão e análise de Certidões Negativas de Débitos (CND) no Portal do Cidadão da Betha Sistemas.
 
