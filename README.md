@@ -12,7 +12,7 @@ Esta é uma solução robusta de automação desenvolvida em **Python** para oti
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Python 3.14.3**
+* **Python 3.12+**
 * **Selenium**: Automação de navegação web.
 * **PyAutoGUI**: Automação de interface gráfica (teclado/mouse).
 * **PyPDF2 & pdfplumber**: Processamento e extração de dados de arquivos PDF.
