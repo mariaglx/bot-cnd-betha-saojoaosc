@@ -27,7 +27,7 @@ Este projeto utilizou IA Generativa (Gemini) como copiloto estratégico para:
 ## 🚀 Próximos Passos & Melhorias
 O foco das próximas atualizações é transformar este script em uma ferramenta acessível e versátil:
 * **Portabilidade (Executável)**: Empacotamento do projeto via PyInstaller ou Nuitka para gerar um executável (.exe) independente, permitindo o uso em máquinas sem ambiente Python ou bibliotecas instaladas.
-* **Interface Gráfica (GUI)**: Desenvolvimento de uma interface amigável (utilizando CustomTkinter ou PySide) para que o usuário possa selecionar pastas e iniciar o processo de forma intuitiva.
+* **Interface Gráfica (GUI)**: Desenvolvimento de uma interface amigável para que o usuário possa selecionar pastas e iniciar o processo de forma intuitiva.
 * **Generalização da Extração**: Evolução do motor de Regex e processamento de texto para identificar e extrair CPFs/CNPJs de qualquer modelo de documento fonte, removendo a dependência de um layout específico.
 
 ## ⚙️ Configuração
